@@ -37,7 +37,7 @@ The API is live and can be tested at the following endpoints.
 ### 1. Clone the Repository
 
 ```
-git clone [https://github.com/adewoye-saheed-dML/hng-task-two.git](https://github.com/adewoye-saheed-dML/hng-task-two.git)
+git clone https://github.com/adewoye-saheed-dML/hng-task-two.git
 cd hng-task-two
 ```
 ### 2\. Install Dependencies

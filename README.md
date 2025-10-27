@@ -42,49 +42,78 @@ cd hng-task-two
 ```
 ### 2\. Install Dependencies
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   npm install   `
+```  npm install 
+```
 
 ### 3\. Set up Your Database
 
 Create a MySQL database (local or remote). Run the following SQL scripts to create the necessary tables.
 
 **countries table:**
-
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   CREATE TABLE countries (    id INT AUTO_INCREMENT PRIMARY KEY,    name VARCHAR(255) NOT NULL UNIQUE,    capital VARCHAR(255),    region VARCHAR(255),    population BIGINT,    currency_code VARCHAR(10),    exchange_rate DECIMAL(20, 10),    estimated_gdp DOUBLE,    flag_url TEXT,    last_refreshed_at TIMESTAMP NULL  );   `
+```
+   CREATE TABLE countries (    id INT AUTO_INCREMENT PRIMARY KEY,    name VARCHAR(255) NOT NULL UNIQUE,    capital VARCHAR(255),    region VARCHAR(255),    population BIGINT,    currency_code VARCHAR(10),    exchange_rate DECIMAL(20, 10),    estimated_gdp DOUBLE,    flag_url TEXT,    last_refreshed_at TIMESTAMP NULL  );   
+```
 
 **app\_status table:**
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   CREATE TABLE app_status (    id INT PRIMARY KEY,    last_refreshed_at TIMESTAMP NULL  );   `
+```   CREATE TABLE app_status (   
+       id INT PRIMARY KEY, 
+       last_refreshed_at TIMESTAMP NULL  );   
+```
 
 ### 4\. Create Your Environment File
 
 Create a file named .env in the root of the project. The configuration below is for an Aiven-hosted database.
 
+-  .env file 
+-  Server Port  PORT=3000  
+-  Aiven (or other remote MySQL)
+####  Database Credentials
+- DB_HOST=your-aiven-host.aivencloud.com  
+- DB_PORT=your-aiven-port 
+- DB_USER=avnadmin  
+- DB_PASSWORD=your-aiven-password  
+- DB_DATABASE=defaultdb 
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   # .env file  # Server Port  PORT=3000  # Aiven (or other remote MySQL) Database Credentials  DB_HOST=your-aiven-host.aivencloud.com  DB_PORT=your-aiven-port  DB_USER=avnadmin  DB_PASSWORD=your-aiven-password  DB_DATABASE=defaultdb  # Aiven SSL Certificate Authority  # Go to your Aiven DB Overview -> "SSL" tab -> Download "CA Certificate"  # Open the .pem file, copy its full text content.  # IMPORTANT: Paste it as a single line, replacing all newlines with \n  DB_CA="-----BEGIN CERTIFICATE-----\nMI...[rest of certificate]...END CERTIFICATE-----\n"   `
+#### Aiven SSL Certificate Authority  
+- Go to your Aiven DB Overview -> "SSL" tab -> Download "CA Certificate" 
+-  Open the .pem file, copy its full text content. 
+-  IMPORTANT: Paste it as a single line, replacing all newlines with \n 
+
+```
+ DB_CA="-----BEGIN CERTIFICATE-----\nMI...[rest of certificate]...END CERTIFICATE-----\n"   `
+
+```
 
 ### 5\. Start the Server
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   npm start   `
+```
+ npm start
+```
 
 The server will now be running at http://localhost:3000.
 
 API Endpoint Reference
 -------------------------
 
-**MethodEndpointDescription**POST/countries/refreshFetches data from external APIs, calculates GDP, and saves to the DB.GET/statusReturns total countries and the last refresh timestamp.GET/countries/imageServes a generated PNG image summary of the data.GET/countriesReturns a list of all countries. Supports query params: ?region=, ?currency=, ?sort= (e.g., gdp\_desc, name\_asc).POST/countriesCreates a new country. Requires a JSON body with name, population, currency\_code.GET/countries/:nameGets a single country by its exact name.PATCH/countries/:nameUpdates one or more fields of a specific country.DELETE/countries/:nameDeletes a country from the database.
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/countries/refresh` | Fetches data from external APIs, calculates GDP, and saves to the DB. |
+| `GET` | `/status` | Returns total countries and the last refresh timestamp. |
+| `GET` | `/countries/image` | Serves a generated PNG image summary of the data. |
+| `GET` | `/countries` | Returns a list of all countries. Supports query params: `?region=`, `?currency=`, `?sort=` (e.g., `gdp_desc`, `name_asc`). |
+| `POST` | `/countries` | Creates a new country. Requires a JSON body with `name`, `population`, `currency_code`. |
+| `GET` | `/countries/:name` | Gets a single country by its exact name. |
+| `PATCH` | `/countries/:name` | Updates one or more fields of a specific country. |
+| `DELETE` | `/countries/:name` | Deletes a country from the database. |
+
 
 Dependencies
 ---------------
 
 *   express
-
 *   mysql2
-
 *   axios
-
 *   express-validator
-
 *   canvas
-
 *   dotenv`

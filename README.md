@@ -42,7 +42,8 @@ cd hng-task-two
 ```
 ### 2\. Install Dependencies
 
-```  npm install 
+```
+ npm install 
 ```
 
 ### 3\. Set up Your Database

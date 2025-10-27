@@ -1,6 +1,7 @@
 // db.js
 
 const mysql = require('mysql2/promise');
+const fs = require('fs');
 require('dotenv').config();
 
 // Create the connection pool
@@ -14,7 +15,10 @@ const db = mysql.createPool({
 
   waitForConnections: true,
   connectionLimit: 10,
-  maxIdle: 10
+  maxIdle: 10,
+  ssl: {
+    ca: fs.readFileSync('./certs/ca.pem')
+  },
 });
 
 module.exports = db;

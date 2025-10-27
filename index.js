@@ -85,62 +85,67 @@ app.post('/countries/refresh', async(req, res)=>{
           estimated_gdp: estimatedGdp
       };
       });
-      try {
-        // This is the magic SQL query
-        const sql = `
-            INSERT INTO countries (name, capital, region, population, currency_code, exchange_rate, estimated_gdp, flag_url)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-                capital = VALUES(capital),
-                region = VALUES(region),
-                population = VALUES(population),
-                currency_code = VALUES(currency_code),
-                exchange_rate = VALUES(exchange_rate),
-                estimated_gdp = VALUES(estimated_gdp),
-                flag_url = VALUES(flag_url),
-                last_refreshed_at = NOW(); 
-        `; 
+      // map through all countries and run the query
+        try {
+          // 1. Map all countries to an array of arrays
+          const allCountryValues = processedCountries.map(country => [
+              country.name,
+              country.capital,
+              country.region,
+              country.population,
+              country.currency_code,
+              country.exchange_rate,
+              country.estimated_gdp,
+              country.flag_url
+          ]);
 
-        // Loop through all countries and run the query for each
-        for (const country of processedCountries) {
-            const values = [
-                country.name,
-                country.capital,
-                country.region,
-                country.population,
-                country.currency_code,
-                country.exchange_rate,
-                country.estimated_gdp,
-                country.flag_url
-            ];
-            await db.query(sql, values);
-        }
 
-        //  Update Global Status 
-        const statusSql = `
-            INSERT INTO app_status (id, last_refreshed_at)
-            VALUES (1, NOW())
-            ON DUPLICATE KEY UPDATE
-                last_refreshed_at = NOW();
-        `;
-        await db.query(statusSql);
+   const sql = `
+        INSERT INTO countries (
+            name, capital, region, population, currency_code, 
+            exchange_rate, estimated_gdp, flag_url
+        )
+        VALUES ?  
+        ON DUPLICATE KEY UPDATE
+            capital = VALUES(capital),
+            region = VALUES(region),
+            population = VALUES(population),
+            currency_code = VALUES(currency_code),
+            exchange_rate = VALUES(exchange_rate),
+            estimated_gdp = VALUES(estimated_gdp),
+            flag_url = VALUES(flag_url),
+            last_refreshed_at = NOW();
+    `;
 
-        // image_generation
-      const [countRows] = await db.query('SELECT COUNT(*) AS total FROM countries');
-      const totalCountries = countRows[0].total;
+    // 3. Run the query ONCE with all values
+    //    Note: The values are wrapped in an extra array: [allCountryValues]
+    await db.query(sql, [allCountryValues]);
 
-      const [topCountries] = await db.query(
-        'SELECT name, estimated_gdp FROM countries ORDER BY estimated_gdp DESC LIMIT 5'
-      );
-      const lastRefreshed = new Date(); 
-      await generateSummaryImage(totalCountries, topCountries, lastRefreshed);
+    // 4. Update Global Status (this part was already fine)
+    const statusSql = `
+        INSERT INTO app_status (id, last_refreshed_at)
+        VALUES (1, NOW())
+        ON DUPLICATE KEY UPDATE
+            last_refreshed_at = NOW();
+    `;
+    await db.query(statusSql);
 
-        // Send Final Response
-        res.status(200).json({
-            status: "success",
-            message: "Countries cache refreshed successfully.",
-            countries_processed: processedCountries.length
-        });
+    // 5. Image generation (this part was also fine)
+    const [countRows] = await db.query('SELECT COUNT(*) AS total FROM countries');
+    const totalCountries = countRows[0].total;
+
+    const [topCountries] = await db.query(
+      'SELECT name, estimated_gdp FROM countries ORDER BY estimated_gdp DESC LIMIT 5'
+    );
+    const lastRefreshed = new Date(); 
+    await generateSummaryImage(totalCountries, topCountries, lastRefreshed);
+
+    // 6. Send Final Response
+    res.status(200).json({
+        status: "success",
+        message: "Countries cache refreshed successfully.",
+        countries_processed: processedCountries.length
+    });
 
     } catch (dbError) {
         console.error("Database save error:", dbError);
@@ -266,10 +271,10 @@ app.delete('/countries/:name', async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Country not found' });
     }
-    res.status(200).json(rows[0]);
+    res.status(200).json({ message: 'Country deleted successfully' });
 
   } catch (error) {
-    console.error('Error fetching single country:', error);
+    console.error('Error deleting single country:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

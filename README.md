@@ -51,14 +51,28 @@ Create a MySQL database (local or remote). Run the following SQL scripts to crea
 
 **countries table:**
 ```
-   CREATE TABLE countries (    id INT AUTO_INCREMENT PRIMARY KEY,    name VARCHAR(255) NOT NULL UNIQUE,    capital VARCHAR(255),    region VARCHAR(255),    population BIGINT,    currency_code VARCHAR(10),    exchange_rate DECIMAL(20, 10),    estimated_gdp DOUBLE,    flag_url TEXT,    last_refreshed_at TIMESTAMP NULL  );   
+
+CREATE TABLE countries (
+ id INT AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(255) NOT NULL UNIQUE,
+ capital VARCHAR(255),
+ region VARCHAR(255),
+ population BIGINT,
+ currency_code VARCHAR(10),
+ exchange_rate DECIMAL(20, 10),
+ estimated_gdp DOUBLE,
+ flag_url TEXT,
+ last_refreshed_at TIMESTAMP NULL
+ );   
 ```
 
 **app\_status table:**
 
-```   CREATE TABLE app_status (   
-       id INT PRIMARY KEY, 
-       last_refreshed_at TIMESTAMP NULL  );   
+```  
+ CREATE TABLE app_status (   
+ id INT PRIMARY KEY, 
+ last_refreshed_at TIMESTAMP NULL
+ );   
 ```
 
 ### 4\. Create Your Environment File
@@ -80,10 +94,9 @@ Create a file named .env in the root of the project. The configuration below is 
 -  Open the .pem file, copy its full text content. 
 -  IMPORTANT: Paste it as a single line, replacing all newlines with \n 
 
-```
- DB_CA="-----BEGIN CERTIFICATE-----\nMI...[rest of certificate]...END CERTIFICATE-----\n"   `
-
-```
+`
+ DB_CA="-----BEGIN CERTIFICATE-----\nMI...[rest of certificate]...END CERTIFICATE-----\n" 
+ `
 
 ### 5\. Start the Server
 
@@ -116,4 +129,4 @@ Dependencies
 *   axios
 *   express-validator
 *   canvas
-*   dotenv`
+*   dotenv
